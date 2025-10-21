@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tara Construcción</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <img src="WhatsApp Image 2025-10-13 at 7.15.34 PM.jpeg" alt="Logo Tara Construcción" class="logo">
+      <div>
+        <h1>Tara Construcción</h1>
+        <p>Construimos tus sueños con calidad</p>
+      </div>
+    </div>
+    <button id="menu-toggle">☰</button>
+    <nav id="menu">
+      <a href="#servicios">Servicios</a>
+      <a href="#galeria">Galería</a>
+      <a href="#cotizacion">Cotización</a>
+      <a href="#comentarios">Comentarios</a>
+      <a href="#ubicacion">Ubicación</a>
+    </nav>
+  </header>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <h2>Servicios</h2>
+    <div class="cards-container">
+      <div class="card">
+        <i class="fas fa-home"></i>
+        Construcción de casas
+      </div>
+      <div class="card">
+        <i class="fas fa-tools"></i>
+        Remodelaciones
+      </div>
+      <div class="card">
+        <i class="fas fa-building"></i>
+        Obra civil
+      </div>
+      <div class="card">
+        <i class="fas fa-lightbulb"></i>
+        Consultoría
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="galeria">
+    <h2>Galería</h2>
+    <div class="gallery">
+      <img src="1.jpeg" alt="Casa en obra" />
+      <img src="2.jpeg" alt="Estuco" />
+      <img src="3.jpeg" alt="Interior moderno" />
+      <img src="4.jpeg" alt="Arquitectura" />
+      <img src="5.jpeg" alt="Construcción" />
+    </div>
+  </section>
+
+  <!-- COTIZACIÓN -->
+  <section id="cotizacion">
+    <h2>Cotización</h2>
+    <form action="https://formspree.io/f/mkgvaqkl" method="POST">
+      <input type="email" name="email" placeholder="Tu correo" required />
+      <textarea name="message" placeholder="Describe tu proyecto..." required></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <!-- COMENTARIOS -->
+  <section id="comentarios">
+    <h2>Comentarios de nuestros clientes</h2>
+    <form id="comentarioForm">
+      <input type="text" id="nombre" placeholder="Tu nombre" required />
+      <textarea id="comentario" placeholder="Escribe tu comentario..." required></textarea>
+      <button type="submit">Agregar</button>
+    </form>
+    <div id="listaComentarios"></div>
+  </section>
+
+  <!-- UBICACIÓN -->
+  <section id="ubicacion">
+    <h2>Ubicación</h2>
+    <p>Tehuacán, Puebla</p>
+    <iframe src="https://www.google.com/maps?q=Tehuacan,Puebla&output=embed" loading="lazy"></iframe>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 Tara Construcción</p>
+  </footer>
+
+  <!-- BOTÓN WHATSAPP -->
+  <a href="https://wa.me/522381130356" target="_blank" id="whatsapp-btn">💬</a>
+
+  <!-- FIREBASE & SCRIPT -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJ4HtijLjn1uQLOiSr-CSkYNTNIMBlqGM",
+      authDomain: "taraconstruccion-96c00.firebaseapp.com",
+      projectId: "taraconstruccion-96c00",
+      storageBucket: "taraconstruccion-96c00.firebasestorage.app",
+      messagingSenderId: "995744283549",
+      appId: "1:995744283549:web:645aff3360ab00dc464d74",
+      measurementId: "G-TFZWSPBTME"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("comentarioForm");
+    const lista = document.getElementById("listaComentarios");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const comentario = document.getElementById("comentario").value;
+      if(!nombre || !comentario) return;
+      try {
+        await addDoc(collection(db, "comentarios"), {
+          nombre,
+          texto: comentario,
+          fecha: new Date()
+        });
+        form.reset();
+        mostrarComentarios();
+      } catch (err) {
+        alert("Error al guardar comentario: " + err.message);
+      }
+    });
+
+    const mostrarComentarios = async () => {
+      lista.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "comentarios"));
+      snapshot.forEach((docu) => {
+        const c = docu.data();
+        const div = document.createElement("div");
+        div.classList.add("opinion");
+        div.innerHTML = `
+          <p>"${c.texto}"</p>
+          <strong>- ${c.nombre}</strong>
+          <button class="btn-borrar" data-id="${docu.id}">🗑</button>
+        `;
+        lista.appendChild(div);
+      });
+
+      document.querySelectorAll(".btn-borrar").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          const pass = prompt("Introduce la contraseña para borrar el comentario:");
+          if(pass !== "252508") { alert("Contraseña incorrecta"); return; }
+          if(confirm("¿Seguro que deseas borrar este comentario?")) {
+            await deleteDoc(doc(db, "comentarios", id));
+            mostrarComentarios();
+          }
+        });
+      });
+    };
+
+    mostrarComentarios();
+
+    // MENÚ RESPONSIVO
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      document.getElementById("menu").classList.toggle("open");
+    });
+  </script>
+
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
