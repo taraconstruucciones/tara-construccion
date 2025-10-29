@@ -6,11 +6,12 @@
   <title>Tara Construcción</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
   <!-- HEADER -->
-  <header>
+  <header id="header">
     <div class="logo-container">
       <img src="WhatsApp Image 2025-10-13 at 7.15.34 PM.jpeg" alt="Logo Tara Construcción" class="logo">
       <div>
@@ -32,22 +33,10 @@
   <section id="servicios">
     <h2>Servicios</h2>
     <div class="cards-container">
-      <div class="card">
-        <i class="fas fa-home"></i>
-        Construcción de casas
-      </div>
-      <div class="card">
-        <i class="fas fa-tools"></i>
-        Remodelaciones
-      </div>
-      <div class="card">
-        <i class="fas fa-building"></i>
-        Obra civil
-      </div>
-      <div class="card">
-        <i class="fas fa-lightbulb"></i>
-        Consultoría
-      </div>
+      <div class="card"><i class="fas fa-home"></i> Construcción de casas</div>
+      <div class="card"><i class="fas fa-tools"></i> Remodelaciones</div>
+      <div class="card"><i class="fas fa-building"></i> Obra civil</div>
+      <div class="card"><i class="fas fa-lightbulb"></i> Consultoría</div>
     </div>
   </section>
 
@@ -55,11 +44,11 @@
   <section id="galeria">
     <h2>Galería</h2>
     <div class="gallery">
-      <img src="1.jpeg" alt="Casa en obra" />
-      <img src="2.jpeg" alt="Estuco" />
-      <img src="3.jpeg" alt="Interior moderno" />
-      <img src="4.jpeg" alt="Arquitectura" />
-      <img src="5.jpeg" alt="Construcción" />
+      <img src="1.jpeg" alt="Casa en obra" class="gallery-img"/>
+      <img src="2.jpeg" alt="Estuco" class="gallery-img"/>
+      <img src="3.jpeg" alt="Interior moderno" class="gallery-img"/>
+      <img src="4.jpeg" alt="Arquitectura" class="gallery-img"/>
+      <img src="5.jpeg" alt="Construcción" class="gallery-img"/>
     </div>
   </section>
 
@@ -99,7 +88,7 @@
   <!-- BOTÓN WHATSAPP -->
   <a href="https://wa.me/522381130356" target="_blank" id="whatsapp-btn">💬</a>
 
-  <!-- FIREBASE & SCRIPT -->
+  <!-- SCRIPT JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -172,8 +161,28 @@
     document.getElementById("menu-toggle").addEventListener("click", () => {
       document.getElementById("menu").classList.toggle("open");
     });
+
+    // SCROLL HEADER EFECTO
+    const header = document.getElementById("header");
+    window.addEventListener("scroll", () => {
+      if(window.scrollY > 50){
+        header.classList.add("sticky");
+      } else {
+        header.classList.remove("sticky");
+      }
+    });
+
+    // GALERÍA LIGHTBOX SIMPLE
+    document.querySelectorAll('.gallery-img').forEach(img => {
+      img.addEventListener('click', () => {
+        const visor = document.createElement('div');
+        visor.classList.add('visor');
+        visor.innerHTML = `<img src="${img.src}" alt="${img.alt}">`;
+        document.body.appendChild(visor);
+        visor.addEventListener('click', () => visor.remove());
+      });
+    });
   </script>
 
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
